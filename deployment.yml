@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kid-migrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kid-migrator
+  template:
+    metadata:
+      labels:
+        app: kid-migrator
+    spec:
+      containers:
+        - name: kid-migrator
+          image: kid-migrator:latest
+          env:
+            - name: SOURCE_URL
+              value: jdbc:postgresql://source-db:5432/source
+            - name: SOURCE_USER
+              value: source_user
+            - name: SOURCE_PASSWORD
+              value: source_pass
+            - name: TARGET_URL
+              value: jdbc:postgresql://target-db:5432/target
+            - name: TARGET_USER
+              value: target_user
+            - name: TARGET_PASSWORD
+              value: target_pass
+          volumeMounts:
+            - name: config
+              mountPath: /app/config.properties
+              subPath: config.properties
+      volumes:
+        - name: config
+          configMap:
+            name: kid-migrator-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kid-migrator-config
+data:
+  config.properties: |
+    source.url=${SOURCE_URL}
+    source.user=${SOURCE_USER}
+    source.password=${SOURCE_PASSWORD}
+    target.url=${TARGET_URL}
+    target.user=${TARGET_USER}
+    target.password=${TARGET_PASSWORD}
+    batchSize=1000
+    taskName=default-task
