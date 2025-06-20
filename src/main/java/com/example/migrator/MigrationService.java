@@ -78,10 +78,13 @@ public class MigrationService {
         String inList = batch.stream().map(id -> "'" + id + "'").reduce((a,b) -> a + "," + b).orElse("'0'");
         String copyOutSql = "COPY (SELECT id, birthday FROM person WHERE id IN (" + inList + ")) TO STDOUT WITH (FORMAT CSV)";
         String copyInSql = "COPY kids (id, birthday) FROM STDIN WITH (FORMAT CSV)";
-        try (var reader = new InputStreamReader(srcCopy.copyOut(copyOutSql));
+        try (var srcWriter = new StringWriter();
              var writer = new StringWriter();
              CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
-            new BufferedReader(reader).lines().forEach(line -> {
+            // Copy data from the source database into a string
+            srcCopy.copyOut(copyOutSql, srcWriter);
+            // Parse each line and reprint using CSVPrinter to normalise CSV format
+            new BufferedReader(new StringReader(srcWriter.toString())).lines().forEach(line -> {
                 try {
                     printer.printRecord(line.split(",", 2));
                 } catch (IOException e) {
