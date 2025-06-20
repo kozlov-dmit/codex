@@ -80,4 +80,40 @@ public class MigrationServiceEmbeddedPostgresTest {
             }
         }
     }
+
+    @Test
+    void migrationCopies3000Of10000RowsByAge() throws Exception {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start()) {
+
+            String srcUrl = src.getJdbcUrl("postgres", "postgres");
+            String dstUrl = dst.getJdbcUrl("postgres", "postgres");
+
+            try (Connection c = DriverManager.getConnection(srcUrl, "postgres", "postgres");
+                 Statement st = c.createStatement()) {
+                st.execute("CREATE TABLE person(id text primary key, birthday date)");
+                for (int i = 1; i <= 3000; i++) {
+                    st.execute("INSERT INTO person(id, birthday) VALUES('" + i + "', current_date - interval '10 years')");
+                }
+                for (int i = 3001; i <= 10000; i++) {
+                    st.execute("INSERT INTO person(id, birthday) VALUES('" + i + "', current_date - interval '20 years')");
+                }
+            }
+            try (Connection c = DriverManager.getConnection(dstUrl, "postgres", "postgres");
+                 Statement st = c.createStatement()) {
+                st.execute("CREATE TABLE kids(id text primary key, birthday date)");
+            }
+
+            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 500, "task", null);
+            MigrationService service = new MigrationService(cfg);
+            service.run();
+
+            try (Connection c = DriverManager.getConnection(dstUrl, "postgres", "postgres");
+                 Statement st = c.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT count(*) FROM kids")) {
+                assertTrue(rs.next());
+                assertEquals(3000, rs.getInt(1));
+            }
+        }
+    }
 }
