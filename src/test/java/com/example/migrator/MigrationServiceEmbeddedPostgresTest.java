@@ -1,6 +1,6 @@
 package com.example.migrator;
 
-import io.zonky.test.postgres.embedded.EmbeddedPostgres;
+import io.zonky.test.db.postgres.embedded.EmbeddedPostgres;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -14,12 +14,8 @@ public class MigrationServiceEmbeddedPostgresTest {
 
     @Test
     void migrationCopiesRows() throws Exception {
-        try (EmbeddedPostgres src = EmbeddedPostgres.builder()
-                .setProvider(EmbeddedPostgres.PreferredProvider.ZONKY)
-                .start();
-             EmbeddedPostgres dst = EmbeddedPostgres.builder()
-                .setProvider(EmbeddedPostgres.PreferredProvider.ZONKY)
-                .start()) {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().start()) {
 
             String srcUrl = src.getJdbcUrl("postgres", "postgres");
             String dstUrl = dst.getJdbcUrl("postgres", "postgres");
