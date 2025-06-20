@@ -47,4 +47,37 @@ public class MigrationServiceEmbeddedPostgresTest {
             }
         }
     }
+
+    @Test
+    void migrationCopies1000RowsInChunksOf100() throws Exception {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start()) {
+
+            String srcUrl = src.getJdbcUrl("postgres", "postgres");
+            String dstUrl = dst.getJdbcUrl("postgres", "postgres");
+
+            try (Connection c = DriverManager.getConnection(srcUrl, "postgres", "postgres");
+                 Statement st = c.createStatement()) {
+                st.execute("CREATE TABLE person(id text primary key, birthday date)");
+                for (int i = 1; i <= 1000; i++) {
+                    st.execute("INSERT INTO person(id, birthday) VALUES('" + i + "', current_date - interval '10 years')");
+                }
+            }
+            try (Connection c = DriverManager.getConnection(dstUrl, "postgres", "postgres");
+                 Statement st = c.createStatement()) {
+                st.execute("CREATE TABLE kids(id text primary key, birthday date)");
+            }
+
+            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 100, "task", null);
+            MigrationService service = new MigrationService(cfg);
+            service.run();
+
+            try (Connection c = DriverManager.getConnection(dstUrl, "postgres", "postgres");
+                 Statement st = c.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT count(*) FROM kids")) {
+                assertTrue(rs.next());
+                assertEquals(1000, rs.getInt(1));
+            }
+        }
+    }
 }
