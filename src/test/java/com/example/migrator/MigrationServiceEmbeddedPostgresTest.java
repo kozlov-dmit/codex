@@ -2,6 +2,7 @@ package com.example.migrator;
 
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres;
 import org.junit.jupiter.api.Test;
+import io.prometheus.client.CollectorRegistry;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,6 +36,8 @@ public class MigrationServiceEmbeddedPostgresTest {
             Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 10, "task", null);
             MigrationService service = new MigrationService(cfg);
             service.run();
+            Double processed = CollectorRegistry.defaultRegistry.getSampleValue("migrator_processed_total");
+            assertEquals(2.0, processed);
 
             try (Connection c = DriverManager.getConnection(dstUrl, "postgres", "postgres");
                  Statement st = c.createStatement();
