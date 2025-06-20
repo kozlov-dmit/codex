@@ -15,8 +15,8 @@ public class MigrationServiceEmbeddedPostgresTest {
 
     @Test
     void migrationCopiesRows() throws Exception {
-        try (EmbeddedPostgres src = EmbeddedPostgres.builder().start();
-             EmbeddedPostgres dst = EmbeddedPostgres.builder().start()) {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start()) {
 
             String srcUrl = src.getJdbcUrl("postgres", "postgres");
             String dstUrl = dst.getJdbcUrl("postgres", "postgres");
