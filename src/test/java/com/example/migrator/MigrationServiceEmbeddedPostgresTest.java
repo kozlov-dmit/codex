@@ -50,8 +50,8 @@ public class MigrationServiceEmbeddedPostgresTest {
 
     @Test
     void migrationCopies1000RowsInChunksOf100() throws Exception {
-        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start();
-             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start()) {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start()) {
 
             String srcUrl = src.getJdbcUrl("postgres", "postgres");
             String dstUrl = dst.getJdbcUrl("postgres", "postgres");
