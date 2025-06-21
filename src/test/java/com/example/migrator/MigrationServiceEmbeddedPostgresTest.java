@@ -13,10 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MigrationServiceEmbeddedPostgresTest {
 
+    private static final String LOCALE = "C";
+
     @Test
     void migrationCopiesRows() throws Exception {
-        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start();
-             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "en_US.UTF-8").start()) {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", LOCALE).start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", LOCALE).start()) {
 
             String srcUrl = src.getJdbcUrl("postgres", "postgres");
             String dstUrl = dst.getJdbcUrl("postgres", "postgres");
@@ -50,8 +52,8 @@ public class MigrationServiceEmbeddedPostgresTest {
 
     @Test
     void migrationCopies1000RowsInChunksOf100() throws Exception {
-        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start();
-             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start()) {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", LOCALE).start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", LOCALE).start()) {
 
             String srcUrl = src.getJdbcUrl("postgres", "postgres");
             String dstUrl = dst.getJdbcUrl("postgres", "postgres");
@@ -83,8 +85,8 @@ public class MigrationServiceEmbeddedPostgresTest {
 
     @Test
     void migrationCopies3000Of10000RowsByAge() throws Exception {
-        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start();
-             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", "C").start()) {
+        try (EmbeddedPostgres src = EmbeddedPostgres.builder().setLocaleConfig("locale", LOCALE).start();
+             EmbeddedPostgres dst = EmbeddedPostgres.builder().setLocaleConfig("locale", LOCALE).start()) {
 
             String srcUrl = src.getJdbcUrl("postgres", "postgres");
             String dstUrl = dst.getJdbcUrl("postgres", "postgres");
