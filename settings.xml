@@ -9,7 +9,7 @@
     <proxy>
       <id>codexProxy</id>
       <active>true</active>
-      <protocol>https</protocol>
+      <protocol>http</protocol>
       <host>proxy</host>
       <port>8080</port>
     </proxy>

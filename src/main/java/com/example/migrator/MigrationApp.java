@@ -1,23 +1,37 @@
 package com.example.migrator;
 
 import io.prometheus.client.exporter.HTTPServer;
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
-public class MigrationApp {
-    public static void main(String[] args) throws Exception {
-        Properties props = new Properties();
-        try (InputStream in = MigrationApp.class.getClassLoader().getResourceAsStream("config.properties")) {
-            if (in == null) {
-                System.err.println("config.properties not found");
-                return;
-            }
-            props.load(in);
-        }
+@SpringBootApplication
+public class MigrationApp implements CommandLineRunner {
 
-        Config config = Config.from(props);
-        MigrationService service = new MigrationService(config);
+    private final MigrationService service;
+
+    public MigrationApp(MigrationService service) {
+        this.service = service;
+    }
+
+    @Bean
+    Config config(Environment env) {
+        return Config.from(env);
+    }
+
+    @Bean
+    MigrationService migrationService(Config config) {
+        return new MigrationService(config);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(MigrationApp.class, args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
         HTTPServer server = new HTTPServer(9090);
         try {
             service.run();
