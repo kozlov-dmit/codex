@@ -25,11 +25,13 @@ public class ConfigTest {
         props.setProperty("batchSize", "50");
         props.setProperty("taskName", "task1");
         props.setProperty("idsFile", tmp.toString());
+        props.setProperty("impl", "copy");
 
         Config cfg = Config.from(props);
         assertEquals("surl", cfg.sourceUrl());
         assertEquals("tuser", cfg.targetUser());
         assertEquals(50, cfg.batchSize());
         assertEquals(List.of("id1", "id2"), cfg.ids());
+        assertEquals("copy", cfg.impl());
     }
 }

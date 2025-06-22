@@ -19,7 +19,8 @@ public record Config(
         String targetPassword,
         int batchSize,
         String taskName,
-        List<String> ids) {
+        List<String> ids,
+        String impl) {
 
     public static Config from(Properties props) {
         String idsFile = props.getProperty("idsFile");
@@ -40,7 +41,8 @@ public record Config(
                 props.getProperty("target.password"),
                 Integer.parseInt(props.getProperty("batchSize", "1000")),
                 props.getProperty("taskName", "default"),
-                ids
+                ids,
+                props.getProperty("impl", "copy")
         );
     }
 
@@ -63,7 +65,8 @@ public record Config(
                 env.getProperty("migration.target.password"),
                 Integer.parseInt(env.getProperty("migration.batchSize", "1000")),
                 env.getProperty("migration.taskName", "default"),
-                ids
+                ids,
+                env.getProperty("migration.impl", "copy")
         );
     }
 }

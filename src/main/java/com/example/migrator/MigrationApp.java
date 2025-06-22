@@ -23,7 +23,10 @@ public class MigrationApp implements CommandLineRunner {
 
     @Bean
     MigrationService migrationService(Config config) {
-        return new MigrationService(config);
+        return switch (config.impl()) {
+            case "simple" -> new SimpleMigrationService(config);
+            default -> new CopyMigrationService(config);
+        };
     }
 
     public static void main(String[] args) {
