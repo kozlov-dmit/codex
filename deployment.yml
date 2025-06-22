@@ -30,8 +30,8 @@ spec:
               value: target_pass
           volumeMounts:
             - name: config
-              mountPath: /app/config.properties
-              subPath: config.properties
+              mountPath: /app/application.properties
+              subPath: application.properties
       volumes:
         - name: config
           configMap:
@@ -42,12 +42,12 @@ kind: ConfigMap
 metadata:
   name: kid-migrator-config
 data:
-  config.properties: |
-    source.url=${SOURCE_URL}
-    source.user=${SOURCE_USER}
-    source.password=${SOURCE_PASSWORD}
-    target.url=${TARGET_URL}
-    target.user=${TARGET_USER}
-    target.password=${TARGET_PASSWORD}
-    batchSize=1000
-    taskName=default-task
+  application.properties: |
+    migration.source.url=${SOURCE_URL}
+    migration.source.user=${SOURCE_USER}
+    migration.source.password=${SOURCE_PASSWORD}
+    migration.target.url=${TARGET_URL}
+    migration.target.user=${TARGET_USER}
+    migration.target.password=${TARGET_PASSWORD}
+    migration.batchSize=1000
+    migration.taskName=default-task
