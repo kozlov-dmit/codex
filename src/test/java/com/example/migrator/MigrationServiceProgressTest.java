@@ -14,20 +14,20 @@ public class MigrationServiceProgressTest {
         Config cfg = new Config(
                 "jdbc:h2:mem:src", "", "",
                 "jdbc:h2:mem:dst", "", "",
-                10, "task", null
+                10, "task", null, "copy"
         );
-        MigrationService service = new MigrationService(cfg);
+        CopyMigrationService service = new CopyMigrationService(cfg);
 
         try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:dst")) {
-            Method ensure = MigrationService.class.getDeclaredMethod("ensureProgressTable", Connection.class);
+            Method ensure = CopyMigrationService.class.getDeclaredMethod("ensureProgressTable", Connection.class);
             ensure.setAccessible(true);
             ensure.invoke(service, conn);
 
-            Method save = MigrationService.class.getDeclaredMethod("saveProgress", Connection.class, String.class, String.class);
+            Method save = CopyMigrationService.class.getDeclaredMethod("saveProgress", Connection.class, String.class, String.class);
             save.setAccessible(true);
             save.invoke(service, conn, "task", "1");
 
-            Method load = MigrationService.class.getDeclaredMethod("loadProgress", Connection.class, String.class);
+            Method load = CopyMigrationService.class.getDeclaredMethod("loadProgress", Connection.class, String.class);
             load.setAccessible(true);
             String last = (String) load.invoke(service, conn, "task");
             assertEquals("1", last);

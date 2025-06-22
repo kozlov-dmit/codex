@@ -35,8 +35,8 @@ public class MigrationServiceEmbeddedPostgresTest {
                 st.execute("CREATE TABLE kids(id text primary key, birthday date)");
             }
 
-            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 10, "task", null);
-            MigrationService service = new MigrationService(cfg);
+            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 10, "task", null, "copy");
+            MigrationService service = new CopyMigrationService(cfg);
             service.run();
             Double processed = CollectorRegistry.defaultRegistry.getSampleValue("migrator_processed_total");
             assertEquals(2.0, processed);
@@ -70,8 +70,8 @@ public class MigrationServiceEmbeddedPostgresTest {
                 st.execute("CREATE TABLE kids(id text primary key, birthday date)");
             }
 
-            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 100, "task", null);
-            MigrationService service = new MigrationService(cfg);
+            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 100, "task", null, "copy");
+            MigrationService service = new CopyMigrationService(cfg);
             service.run();
 
             try (Connection c = DriverManager.getConnection(dstUrl, "postgres", "postgres");
@@ -106,8 +106,8 @@ public class MigrationServiceEmbeddedPostgresTest {
                 st.execute("CREATE TABLE kids(id text primary key, birthday date)");
             }
 
-            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 500, "task", null);
-            MigrationService service = new MigrationService(cfg);
+            Config cfg = new Config(srcUrl, "postgres", "postgres", dstUrl, "postgres", "postgres", 500, "task", null, "copy");
+            MigrationService service = new CopyMigrationService(cfg);
             service.run();
 
             try (Connection c = DriverManager.getConnection(dstUrl, "postgres", "postgres");
